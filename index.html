@@ -313,13 +313,13 @@
       <div style="position:relative;z-index:1;max-width:680px;width:92vw;text-align:center;display:flex;flex-direction:column;align-items:center;padding:24px 0">
 
         <!-- Badge -->
-        <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid rgba(137,87,229,.35);border-radius:100px;background:rgba(137,87,229,.08);font-size:13px;color:#a371f7;letter-spacing:.04em;margin-bottom:28px">
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid rgba(137,87,229,.35);border-radius:100px;background:rgba(137,87,229,.08);font-size:13px;color:#ffffff;letter-spacing:.04em;margin-bottom:28px">
           <span style="width:6px;height:6px;border-radius:50%;background:#3fb950;box-shadow:0 0 8px #3fb950;animation:pulse 2s infinite"></span>
           GitHub Copilot CLI · Terminal Frenzy
         </div>
 
         <!-- Title -->
-        <h1 style="font-family:'Roboto',sans-serif;font-size:clamp(2.5rem,8vw,5.5rem);font-weight:900;letter-spacing:-.03em;line-height:1;margin:0 0 16px;background:linear-gradient(135deg, #ffffff 0%, #bc8cff 35%, #a371f7 65%, #58a6ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Terminal<br><span id="frenzyZap" style="cursor:pointer;-webkit-text-fill-color:transparent;-webkit-user-select:none;user-select:none">Frenzy</span></h1>
+        <h1 style="font-family:'Roboto',sans-serif;font-size:clamp(2.5rem,8vw,5.5rem);font-weight:900;letter-spacing:-.03em;line-height:1;margin:0 0 16px;color:#ffffff;text-shadow:0 0 30px rgba(255,255,255,0.18)">Terminal<br><span id="frenzyZap" style="cursor:pointer;color:inherit;-webkit-user-select:none;user-select:none">Frenzy</span></h1>
 
         <!-- Typing animations with GitHub mascots -->
         <div id="homeMascotLines" style="width:100%;max-width:720px;display:flex;flex-direction:column;gap:4px;margin-bottom:24px">
@@ -360,8 +360,7 @@
           <div style="position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:rgba(137,87,229,.08);filter:blur(40px);pointer-events:none"></div>
           <div style="text-align:center;margin-bottom:16px">
             <div class="hero-copy-line" style="margin-bottom:4px;font-size:17px;color:#e6edf3;font-weight:700">Mona, Copilot, and Ducky just unlocked 12 terminal challenges.</div>
-            <div class="hero-copy-line" style="margin-bottom:4px;font-size:15px;color:#bc8cff;font-weight:700">Help them ship fast with the GitHub Copilot CLI before time runs out.</div>
-            <div class="hero-copy-line" style="font-size:15px;color:#58a6ff;font-weight:700">Welcome to Terminal Frenzy!</div>
+            <div class="hero-copy-line" style="font-size:15px;color:#58a6ff;font-weight:700">Help them ship fast with the GitHub Copilot CLI before time runs out.</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:10px">
             <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:rgba(137,87,229,.06);border:1px solid rgba(137,87,229,.12)">
@@ -2193,7 +2192,12 @@
   // Shuffle ALL phrases on every load — completely random order each time
   for (let i = TYPING_PHRASES_ALL.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [TYPING_PHRASES_ALL[i], TYPING_PHRASES_ALL[j]] = [TYPING_PHRASES_ALL[j], TYPING_PHRASES_ALL[i]]; }
   const TYPING_PHRASES = TYPING_PHRASES_ALL;
-  const HOME_MASCOT_SEQUENCE = ['mona', 'copilot', 'ducky', 'mona', 'copilot', 'ducky'];
+  const HOME_MASCOT_SEQUENCE = Object.freeze(['mona', 'copilot', 'ducky', 'mona', 'copilot', 'ducky']);
+  for (let i = 1; i < HOME_MASCOT_SEQUENCE.length; i++) {
+    if (HOME_MASCOT_SEQUENCE[i] === HOME_MASCOT_SEQUENCE[i - 1]) {
+      throw new Error('Home mascot rows cannot repeat the same character on adjacent lines');
+    }
+  }
   const TYPING_PHRASES_BY_WHO = TYPING_PHRASES_ALL.reduce((acc, phrase) => {
     (acc[phrase.who] ||= []).push(phrase);
     return acc;
@@ -2202,6 +2206,10 @@
     const who = HOME_MASCOT_SEQUENCE[lineIndex];
     const phrases = TYPING_PHRASES_BY_WHO[who] || TYPING_PHRASES;
     return phrases[phraseIndex % phrases.length];
+  }
+  function nextHomePhraseIndex(lineIndex, phraseIndex) {
+    const phrases = TYPING_PHRASES_BY_WHO[HOME_MASCOT_SEQUENCE[lineIndex]] || TYPING_PHRASES;
+    return (phraseIndex + 1) % phrases.length;
   }
 
   // --- Typing animation with mascot artwork ---
@@ -2237,7 +2245,7 @@
       if (charIdx <= 0) {
         isDeleting = false;
         showTypedAvatar(null);
-        phraseIdx = (phraseIdx + 1) % TYPING_PHRASES.length;
+        phraseIdx = nextHomePhraseIndex(0, phraseIdx);
         setTimeout(typeLoop, 100 + Math.random() * 300);
         return;
       }
@@ -2286,7 +2294,7 @@
       if (charIdx2 <= 0) {
         isDeleting2 = false;
         showTypedAvatar2(null);
-        phraseIdx2 = (phraseIdx2 + 1) % TYPING_PHRASES.length;
+        phraseIdx2 = nextHomePhraseIndex(1, phraseIdx2);
         setTimeout(typeLoop2, 100 + Math.random() * 300);
         return;
       }
@@ -2334,7 +2342,7 @@
       if (charIdx3 <= 0) {
         isDeleting3 = false;
         showTypedAvatar3(null);
-        phraseIdx3 = (phraseIdx3 + 1) % TYPING_PHRASES.length;
+        phraseIdx3 = nextHomePhraseIndex(2, phraseIdx3);
         setTimeout(typeLoop3, 100 + Math.random() * 300);
         return;
       }
@@ -2381,7 +2389,7 @@
       if (charIdx4 <= 0) {
         isDeleting4 = false;
         showTypedAvatar4(null);
-        phraseIdx4 = (phraseIdx4 + 1) % TYPING_PHRASES.length;
+        phraseIdx4 = nextHomePhraseIndex(3, phraseIdx4);
         setTimeout(typeLoop4, 100 + Math.random() * 300);
         return;
       }
@@ -2412,7 +2420,7 @@
     } else {
       charIdx5--;
       typedEl5.textContent = phrase.slice(0, charIdx5) || '\u00A0';
-      if (charIdx5 <= 0) { isDeleting5 = false; if (typedAvatar5) typedAvatar5.style.display = 'none'; phraseIdx5 = (phraseIdx5 + 1) % TYPING_PHRASES.length; setTimeout(typeLoop5, 100 + Math.random() * 300); return; }
+      if (charIdx5 <= 0) { isDeleting5 = false; if (typedAvatar5) typedAvatar5.style.display = 'none'; phraseIdx5 = nextHomePhraseIndex(4, phraseIdx5); setTimeout(typeLoop5, 100 + Math.random() * 300); return; }
       setTimeout(typeLoop5, 8 + Math.random() * 14);
     }
   }
@@ -2437,7 +2445,7 @@
     } else {
       charIdx6--;
       typedEl6.textContent = phrase.slice(0, charIdx6) || '\u00A0';
-      if (charIdx6 <= 0) { isDeleting6 = false; if (typedAvatar6) typedAvatar6.style.display = 'none'; phraseIdx6 = (phraseIdx6 + 1) % TYPING_PHRASES.length; setTimeout(typeLoop6, 100 + Math.random() * 300); return; }
+      if (charIdx6 <= 0) { isDeleting6 = false; if (typedAvatar6) typedAvatar6.style.display = 'none'; phraseIdx6 = nextHomePhraseIndex(5, phraseIdx6); setTimeout(typeLoop6, 100 + Math.random() * 300); return; }
       setTimeout(typeLoop6, 8 + Math.random() * 14);
     }
   }
