@@ -8,9 +8,7 @@
 
 ### 🎬 Game Preview
 
-[![Copilot CLI Terminal Frenzy gameplay preview](https://raw.githubusercontent.com/DUBSOpenHub/copilot-cli-terminal-frenzy/main/preview.gif?v=mobile-preview)](https://raw.githubusercontent.com/DUBSOpenHub/copilot-cli-terminal-frenzy/main/preview.gif?v=mobile-preview)
-
-[Open the preview GIF directly →](https://raw.githubusercontent.com/DUBSOpenHub/copilot-cli-terminal-frenzy/main/preview.gif?v=mobile-preview)
+[![Copilot CLI Terminal Frenzy gameplay preview](https://raw.githubusercontent.com/DUBSOpenHub/copilot-cli-terminal-frenzy/main/preview.gif?v=20260508-0610)](https://raw.githubusercontent.com/DUBSOpenHub/copilot-cli-terminal-frenzy/main/preview.gif?v=20260508-0610)
 
 ---
 
@@ -19,6 +17,8 @@
 ### 🌐 Browser (instant)
 
 **[Play on GitHub Pages →](https://dubsopenhub.github.io/copilot-cli-terminal-frenzy/)**
+
+[Open the preview GIF directly →](https://raw.githubusercontent.com/DUBSOpenHub/copilot-cli-terminal-frenzy/main/preview.gif?v=20260508-0610)
 
 ### 💻 From your terminal
 
