@@ -175,7 +175,7 @@
     #pipelineStages{display:flex;justify-content:space-between;padding:3px 12px;color:var(--muted);font-size:10px;letter-spacing:1.5px}
     #pipelineStages span.active{color:var(--fg);text-shadow:0 0 10px rgba(63,185,80,0.18)}
 
-    #tips{width:min(980px,96vw);margin-top:2px;color:var(--muted);font-size:11px;letter-spacing:1px;min-height:14px}
+    #tips{display:none}
     #tips b{color:var(--fg)}
     #tips .cop{color:var(--purple2)}
     #mobileHint{display:none;width:min(980px,96vw);margin-top:2px;color:rgba(88,166,255,.9);font-size:11px;letter-spacing:.8px;text-align:center}
@@ -274,19 +274,38 @@
 
     /* Game over */
     .center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
-    .overTitle{font-size:clamp(24px,6vw,52px);letter-spacing:-.02em;font-weight:900;background:linear-gradient(135deg,#f85149,#ff7b72);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .finalScore{font-size:clamp(48px,12vw,96px);font-weight:900;background:linear-gradient(135deg,#ffffff 0%,#bc8cff 40%,#a371f7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 40px rgba(163,113,247,0.3))}
-    .stats{color:#8b949e;font-size:13px;line-height:2.2;text-align:center}
-    .stats b{color:#e6edf3}
-    .rank{letter-spacing:2px;font-size:14px;font-weight:700;padding:8px 20px;border:1px solid rgba(210,153,34,.3);border-radius:100px;background:rgba(210,153,34,.08);color:#d29922}
-    .cli-cta{width:100%;max-width:520px;margin-top:16px;padding:18px 20px;border:1px solid rgba(137,87,229,.22);border-radius:14px;background:linear-gradient(135deg,rgba(137,87,229,.12),rgba(13,17,23,.62));box-shadow:0 0 32px rgba(137,87,229,.12);text-align:center}
-    .cli-cta .cta-kicker{color:#e6edf3;font-size:clamp(16px,2.6vw,22px);font-weight:900;letter-spacing:.04em;line-height:1.25;margin-bottom:10px}
+    .gameover-shell{position:relative;z-index:1;width:min(920px,92vw);max-height:100vh;overflow-y:auto;padding:20px 0 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
+    .overTitle{font-size:clamp(34px,5vw,68px);letter-spacing:-.04em;font-weight:900;background:linear-gradient(135deg,#ff7b72,#f85149);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .endgame-panel{width:100%;display:grid;grid-template-columns:minmax(280px,1fr) minmax(300px,.92fr);gap:16px;padding:16px;border:1px solid rgba(88,166,255,.22);border-radius:26px;background:linear-gradient(135deg,rgba(13,17,23,.78),rgba(22,27,34,.58));box-shadow:0 0 70px rgba(88,166,255,.11),inset 0 0 54px rgba(137,87,229,.07);backdrop-filter:blur(14px)}
+    .score-card,.mvp-card{min-height:280px;border:1px solid rgba(48,54,61,.9);border-radius:20px;background:rgba(13,17,23,.54);box-shadow:inset 0 0 34px rgba(0,0,0,.16)}
+    .score-card{padding:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+    .score-label,.mvp-kicker{color:#58a6ff;font-size:12px;font-weight:900;letter-spacing:2.4px}
+    .finalScore{font-size:clamp(68px,10vw,132px);line-height:.9;font-weight:900;background:linear-gradient(135deg,#ffffff 0%,#bc8cff 42%,#a371f7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 34px rgba(163,113,247,0.26))}
+    .stats{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;color:#8b949e;font-size:12px;line-height:1.2;text-align:left}
+    .stats .stat-pill{padding:10px 12px;border:1px solid rgba(48,54,61,.75);border-radius:12px;background:rgba(22,27,34,.72)}
+    .stats span{display:block;margin-bottom:5px;color:#8b949e}
+    .stats b{color:#e6edf3;font-size:18px}
+    .rank{letter-spacing:2px;font-size:13px;font-weight:800;padding:8px 18px;border:1px solid rgba(210,153,34,.3);border-radius:100px;background:rgba(210,153,34,.08);color:#d29922}
+    .mvp-card{padding:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
+    .mvp-card[hidden]{display:none}
+    .mvp-art-shell{width:min(185px,34vw);aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:1px solid rgba(88,166,255,.22);border-radius:24px;background:radial-gradient(circle at 50% 42%,rgba(88,166,255,.24),rgba(137,87,229,.12) 56%,rgba(13,17,23,.08) 74%)}
+    .mvp-art{width:80%;height:80%;object-fit:contain;filter:drop-shadow(0 0 30px rgba(88,166,255,.32))}
+    .mvp-name{color:#e6edf3;font-size:clamp(34px,5vw,56px);font-weight:900;letter-spacing:-.04em;line-height:1}
+    .mvp-stat{color:#3fb950;font-size:clamp(17px,2.2vw,24px);font-weight:900}
+    .cli-cta{width:100%;max-width:760px;margin-top:0;padding:16px 20px;border:1px solid rgba(137,87,229,.22);border-radius:18px;background:linear-gradient(135deg,rgba(137,87,229,.12),rgba(13,17,23,.62));box-shadow:0 0 32px rgba(137,87,229,.12);text-align:center}
+    .cli-cta .cta-kicker{color:#e6edf3;font-size:clamp(15px,1.9vw,19px);font-weight:900;letter-spacing:.02em;line-height:1.25;margin-bottom:8px;white-space:nowrap}
     .cli-cta .cta-title{color:#e6edf3;font-size:15px;font-weight:900;line-height:1.35}
     .cli-cta .cta-copy{margin-top:4px;color:#8b949e;font-size:clamp(18px,3vw,26px);line-height:1.35}
     .cli-cta code{color:#bc8cff;background:rgba(110,64,201,.18);border:1px solid rgba(137,87,229,.22);border-radius:6px;padding:2px 6px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
     .cli-cta a{color:#58a6ff;text-decoration:none;font-weight:900}
     .cli-cta a:hover{text-decoration:underline}
     .again{margin-top:12px;color:#8b949e;font-size:13px;letter-spacing:.03em}
+    @media (max-width:760px){
+      .endgame-panel{grid-template-columns:1fr}
+      .score-card,.mvp-card{min-height:0}
+      .stats{grid-template-columns:1fr}
+      .cli-cta .cta-kicker{white-space:normal}
+    }
 
     /* Handle input */
     .handle-wrap{margin-top:16px;display:flex;align-items:center;gap:8px;justify-content:center}
@@ -352,7 +371,6 @@
       #pipelineTop{padding:3px 8px}
       #pipelineTop .label,#powerStatus,#bossStreak{font-size:10px;letter-spacing:.8px}
       #pipelineStages{display:none}
-      #tips{width:96vw;min-height:18px;font-size:10px;line-height:1.3}
       #mobileHint{display:block}
       #grid{width:96vw;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);min-height:0;max-height:none;height:calc(100dvh - 178px);gap:5px;margin-top:4px;padding-bottom:max(8px,env(safe-area-inset-bottom))}
       .slot{border-radius:11px}
@@ -561,11 +579,26 @@
 
     <!-- GAMEOVER -->
     <div id="gameover" class="screen">
-      <div style="position:relative;z-index:1;max-width:500px;width:92vw;text-align:center;display:flex;flex-direction:column;align-items:center;overflow-y:auto;max-height:100vh;padding:20px 0">
-          <div class="overTitle">Game Over</div>
-          <div class="finalScore" id="finalScore">0</div>
-          <div class="stats" id="finalStats"></div>
-          <div class="rank" id="finalRank">Terminal Rookie</div>
+      <div class="gameover-shell">
+        <div class="overTitle">Game Over</div>
+
+        <div class="endgame-panel">
+          <section class="score-card">
+            <div class="score-label">Final Score</div>
+            <div class="finalScore" id="finalScore">0</div>
+            <div class="rank" id="finalRank">Terminal Rookie</div>
+            <div class="stats" id="finalStats"></div>
+          </section>
+
+          <section class="mvp-card" id="mvpCard" hidden>
+            <div class="mvp-art-shell">
+              <img class="mvp-art" id="mvpAvatar" alt="">
+            </div>
+            <div class="mvp-kicker">Your MVP teammate</div>
+            <div class="mvp-name" id="mvpName">Mona</div>
+            <div class="mvp-stat" id="mvpStat">0 requests cleared</div>
+          </section>
+        </div>
 
           <div class="cli-cta">
             <div class="cta-kicker">Want to try the real GitHub Copilot CLI?</div>
@@ -717,6 +750,10 @@
   const finalScoreEl = document.getElementById('finalScore');
   const finalStatsEl = document.getElementById('finalStats');
   const finalRankEl = document.getElementById('finalRank');
+  const mvpCardEl = document.getElementById('mvpCard');
+  const mvpAvatarEl = document.getElementById('mvpAvatar');
+  const mvpNameEl = document.getElementById('mvpName');
+  const mvpStatEl = document.getElementById('mvpStat');
 
   // Toast
   const toastEl = document.getElementById('toast');
@@ -801,6 +838,40 @@
   function mascotReaction(mascot){
     const reactions = MASCOT_REACTIONS[mascot.name] || [displayName(mascot) + ' approves!'];
     return pick(reactions);
+  }
+  function resetMascotSolves(){
+    mascotSolves = {};
+    MASCOTS.forEach(mascot => { mascotSolves[mascot.name] = 0; });
+  }
+  function recordMascotSolve(mascot){
+    if (!mascot || !mascot.name) return;
+    mascotSolves[mascot.name] = (mascotSolves[mascot.name] || 0) + 1;
+  }
+  function topSolvedMascot(){
+    let best = null;
+    let bestCount = 0;
+    MASCOTS.forEach(mascot => {
+      const count = mascotSolves[mascot.name] || 0;
+      if (count > bestCount){
+        best = mascot;
+        bestCount = count;
+      }
+    });
+    return best ? {mascot: best, count: bestCount} : null;
+  }
+  function renderMvpCard(){
+    const winner = topSolvedMascot();
+    if (!winner || winner.count <= 0){
+      mvpCardEl.hidden = true;
+      return;
+    }
+    const mascot = winner.mascot;
+    const name = displayName(mascot);
+    mvpAvatarEl.src = mascotPopupImage(mascot);
+    mvpAvatarEl.alt = name;
+    mvpNameEl.textContent = name;
+    mvpStatEl.textContent = winner.count + (winner.count === 1 ? ' request cleared' : ' requests cleared');
+    mvpCardEl.hidden = false;
   }
   function rankFor(score){
     if (score < 400) return 'Terminal Rookie';
@@ -983,6 +1054,9 @@
   let approvals = 0;
   let misses = 0;
   let maxMult = 1;
+  let mascotSolves = {};
+  let mascotQueue = [];
+  let lastMascotName = '';
 
   // pipeline / combo
   let pipeline = 0; // 0..100
@@ -1156,12 +1230,27 @@
   }
 
   function pickMascot(excludeName){
-    if (!excludeName) return pick(MASCOTS);
-    for (let tries=0;tries<20;tries++){
-      const p = pick(MASCOTS);
-      if (p.name !== excludeName) return p;
+    if (!mascotQueue.length) refillMascotQueue();
+    const idx = mascotQueue.findIndex(mascot => mascot.name !== excludeName);
+    if (idx < 0) {
+      mascotQueue = [];
+      refillMascotQueue();
+      return pickMascot(excludeName);
     }
-    return pick(MASCOTS);
+    const mascot = mascotQueue.splice(idx, 1)[0];
+    lastMascotName = mascot.name;
+    return mascot;
+  }
+
+  function refillMascotQueue(){
+    mascotQueue = MASCOTS.slice();
+    for (let i = mascotQueue.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [mascotQueue[i], mascotQueue[j]] = [mascotQueue[j], mascotQueue[i]];
+    }
+    if (mascotQueue.length > 1 && mascotQueue[0].name === lastMascotName){
+      [mascotQueue[0], mascotQueue[1]] = [mascotQueue[1], mascotQueue[0]];
+    }
   }
 
   function spawnCard(){
@@ -1185,7 +1274,7 @@
     if (willPower){
       const pow = pick(POWERUPS);
       const dur = Math.max(1600, getCardDurationMs() - 600);
-      slots[idx] = {type:'power', powerId: pow.id, mascot: pick(MASCOTS), key, timeLeftMs: dur, maxTimeMs: dur, prTitle: pow.label};
+      slots[idx] = {type:'power', powerId: pow.id, mascot: pickMascot(), key, timeLeftMs: dur, maxTimeMs: dur, prTitle: pow.label};
       renderSlot(idx);
       sfxPop();
       return;
@@ -1443,6 +1532,7 @@
     }
 
     approvals++;
+    recordMascotSolve(s.mascot);
 
     const base = 100;
     const turboMult = effects.turbo > 0 ? 2 : 1;
@@ -1669,6 +1759,7 @@
 
     bossesDefeated++;
     bossStreak++;
+    recordMascotSolve(boss.mascot);
 
     pumpPipeline(26 + (boss.final ? 24 : 10));
 
@@ -1721,6 +1812,9 @@
     pipeline = 0;
     mult = 1;
     maxMult = 1;
+    resetMascotSolves();
+    mascotQueue = [];
+    lastMascotName = '';
 
     bossActive = false;
     boss = null;
@@ -1858,15 +1952,11 @@
 
     const total = approvals + misses;
     const rate = total ? Math.round((approvals/total)*100) : 0;
-    finalStatsEl.innerHTML =
-      'REQUESTS CLEARED: <b style="color:var(--green)">' + approvals + '</b><br>' +
-      'REQUESTS MISSED: <b style="color:var(--red)">' + misses + '</b><br>' +
-      'MAX PIPELINE: <b style="color:var(--gold)">x' + maxMult + '</b><br>' +
-      'LGTM STREAK: <b style="color:var(--gold)">' + bossStreak + '</b><br>' +
-      'APPROVAL RATE: <b>' + rate + '%</b>';
+    renderFinalStats(rate);
 
     const r = rankFor(score);
     finalRankEl.textContent = r;
+    renderMvpCard();
 
     if (score > highScore){
       highScore = score;
@@ -1930,6 +2020,33 @@
       note(2637, 1.65, 0.20, 'sine');     // E7 shimmer
     }
     victoryJingle();
+  }
+
+  function renderFinalStats(rate){
+    finalStatsEl.innerHTML =
+      '<div class="stat-pill"><span>Cleared</span><b style="color:var(--green)">' + approvals + '</b></div>' +
+      '<div class="stat-pill"><span>Missed</span><b style="color:var(--red)">' + misses + '</b></div>' +
+      '<div class="stat-pill"><span>Max pipeline</span><b style="color:var(--gold)">x' + maxMult + '</b></div>' +
+      '<div class="stat-pill"><span>LGTM streak</span><b style="color:var(--gold)">' + bossStreak + '</b></div>' +
+      '<div class="stat-pill"><span>Approval rate</span><b>' + rate + '%</b></div>';
+  }
+
+  function showEndGamePreview(){
+    score = 545;
+    approvals = 18;
+    misses = 19;
+    maxMult = 6;
+    bossStreak = 0;
+    resetMascotSolves();
+    mascotSolves.mona = 10;
+    mascotSolves.copilot = 5;
+    mascotSolves.ducky = 3;
+    finalScoreEl.textContent = String(score);
+    finalRankEl.textContent = rankFor(score);
+    renderFinalStats(49);
+    renderMvpCard();
+    state = 'gameover';
+    showScreen('gameover');
   }
 
   // --- Loop ---
@@ -2285,7 +2402,11 @@
     });
   }
   fetchArcade();
-  scheduleHomeSparkle();
+  if (new URLSearchParams(location.search).get('preview') === 'endgame') {
+    showEndGamePreview();
+  } else {
+    scheduleHomeSparkle();
+  }
 
   document.getElementById('startBtn').addEventListener('click', () => {
     // Require handle
@@ -2305,19 +2426,6 @@
   document.getElementById('playAgainBtn').addEventListener('click', () => {
     if (state === 'gameover') { ensureAudio(); showScreen('title'); state = 'title'; clack(); }
   });
-
-  // fun idle tips
-  const idleTips = [
-    'Try pressing the purple key 💜',
-    'Ask copilot `/explain` on any request card.',
-    'Pro tip: TAB accepts ghost text for bonus.',
-    'If CI is red, ask copilot to /explain the failure.',
-    'Commands: gh copilot, gh pr merge, gh pr review + LGTM/SGTM'
-  ];
-  setInterval(()=>{
-    if (state !== 'playing' && state !== 'boss') return;
-    if (Math.random() < 0.25) setTip(`<span class="cop">Copilot says:</span> ${escapeHtml(pick(idleTips))}`);
-  }, 2400);
 
   // --- Title screen typing animation ---
   const TYPING_PHRASES_ALL = [
