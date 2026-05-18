@@ -3,12 +3,13 @@
 This repository contains a single-file HTML5 arcade game (`index.html`).
 
 ## Key facts
-- The entire game is one self-contained HTML file (~2,700 lines)
+- The entire game is one self-contained HTML file (~2,900 lines)
 - No build step, no dependencies, no server required
 - All styling is inline CSS, all logic is inline JavaScript
 - Sound effects are synthesized via Web Audio API (no audio files)
 - Mascot artwork is embedded directly in `index.html`
 - High scores persist via `localStorage`
+- The leaderboard is capped to the global top 10, one best score per handle, and syncs through the configured npoint CORS endpoint
 
 ## When making changes
 - Keep everything in `index.html` — do not split into separate files

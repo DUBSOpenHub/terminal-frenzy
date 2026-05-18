@@ -51,6 +51,7 @@ That's it: **12 terminals, 60 seconds**. How many can you clear?
 - ❌ **Wrong key** → lose points and break your combo
 - 👑 **Final request** → Mona appears in the last 10 seconds. Type the full Copilot CLI command.
 - 🏆 **MVP teammate** → the end screen highlights the character you cleared the most requests for.
+- 🕹️ **Global Top 10** → the leaderboard keeps each player's best score only and shows the top 10.
 
 ### Ranks
 
@@ -74,14 +75,21 @@ GitHub's mascot characters — **Mona**, **Copilot**, and **Ducky** — drive ev
 ## 🛠️ Technical Details
 
 - **Single HTML file** — no build step, no dependencies, no server
-- **~2,700 lines** of HTML, CSS, and JavaScript
+- **~2,900 lines** of HTML, CSS, and JavaScript
 - **Web Audio API** — all sound effects synthesized in real-time
 - **Canvas** — Matrix rain background and particle effects
 - **GitHub-inspired typography** — Mona Sans styling with a clean Copilot CLI Terminal Frenzy title
 - **GitHub mascot artwork** — embedded directly in `index.html`
-- **localStorage** — high score persistence across sessions
+- **localStorage** — high score persistence and offline leaderboard cache across sessions
+- **Global Top 10** — shared browser-safe npoint JSON endpoint with local fallback if sync is unavailable
 - **Responsive controls** — keyboard on desktop, tap controls on mobile
 - **Works offline** — mascot artwork ships inside the HTML file
+
+### Leaderboard backend
+
+The game trims leaderboard data to the best score per GitHub handle and keeps only the top 10. `LEADERBOARD_API_URL` in `index.html` points at the shared npoint JSON document used by the live GitHub Pages game.
+
+On load, the game fetches the shared scores with a cache buster. On game over, it merges the new score with the current shared list, keeps the best score for each handle, writes the top 10 back to the endpoint, and caches the result locally. If global sync fails, the UI says so and shows the local browser cache instead of silently pretending the leaderboard is live.
 
 ---
 

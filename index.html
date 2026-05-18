@@ -138,6 +138,10 @@
     .arcade-row:first-child .arcade-avatar{border-color:rgba(210,153,34,.5)}
     .arcade-name{flex:1;color:#bc8cff;font-weight:600;font-size:14px}
     .arcade-score{font-weight:900;color:#e6edf3;font-size:16px;font-variant-numeric:tabular-nums}
+    .arcade-status{margin-top:8px;color:#6e7681;font-size:11px;text-align:center;line-height:1.4}
+    .arcade-status.global{color:#3fb950}
+    .arcade-status.syncing{color:#d29922}
+    .arcade-status.offline{color:#f85149}
 
     /* Help */
     #help .termbody{padding:0}
@@ -484,8 +488,9 @@
 
         <!-- Arcade Leaderboard -->
         <div id="arcadeBoard" style="margin-top:24px;width:100%;max-width:680px">
-          <div style="font-size:13px;color:#6e7681;letter-spacing:2px;text-align:center;margin-bottom:10px">🕹️ Leaderboard</div>
+          <div style="font-size:13px;color:#6e7681;letter-spacing:2px;text-align:center;margin-bottom:10px">🕹️ Global Top 10</div>
           <div id="arcadeRows"></div>
+          <div id="arcadeStatus" class="arcade-status"></div>
         </div>
 
 
@@ -607,8 +612,9 @@
 
           <!-- Leaderboard on game over -->
           <div style="margin-top:20px;width:100%;max-width:420px">
-            <div style="font-size:13px;color:#6e7681;letter-spacing:2px;text-align:center;margin-bottom:10px">🕹️ Leaderboard</div>
+            <div style="font-size:13px;color:#6e7681;letter-spacing:2px;text-align:center;margin-bottom:10px">🕹️ Global Top 10</div>
             <div id="arcadeRowsGameOver"></div>
+            <div id="arcadeStatusGameOver" class="arcade-status"></div>
           </div>
 
           <div style="margin-top:16px">
@@ -2324,55 +2330,162 @@
     if (e.key === 'Enter') { playerInput.blur(); document.getElementById('startBtn').click(); }
   });
 
-  // --- Persistent Leaderboard (JSONBlob) ---
-  const BLOB_ID = '019d2ab9-09cb-7e67-a50a-7187096ed008';
-  const BLOB_URL = 'https://jsonblob.com/api/jsonBlob/' + BLOB_ID;
+  // --- Global Top 10 Leaderboard ---
+  const LEADERBOARD_LIMIT = 10;
+  const LEADERBOARD_API_URL = 'https://api.npoint.io/87071285e62f7194fc8b';
   let arcadeScores = [];
+  let arcadeSyncState = 'local';
+  let arcadeSyncMessage = 'Local top 10 until global sync is connected.';
 
-  async function fetchArcade() {
-    // Load local scores first
+  function setArcadeSync(state, message) {
+    arcadeSyncState = state;
+    arcadeSyncMessage = message;
+    renderArcadeStatus();
+  }
+
+  function renderArcadeStatus() {
+    ['arcadeStatus', 'arcadeStatusGameOver'].forEach(id => {
+      const container = document.getElementById(id);
+      if (!container) return;
+      container.className = 'arcade-status ' + arcadeSyncState;
+      container.textContent = arcadeSyncMessage;
+    });
+  }
+
+  function sanitizeHandle(handle) {
+    return String(handle || '')
+      .trim()
+      .replace(/^@+/, '')
+      .replace(/[^A-Za-z0-9-]/g, '')
+      .slice(0, 30);
+  }
+
+  function normalizeArcadeEntry(entry) {
+    if (!entry || typeof entry !== 'object') return null;
+    const handle = sanitizeHandle(entry.handle);
+    const score = Math.floor(Number(entry.score || 0));
+    if (!handle || score <= 0) return null;
+    const parsedDate = Date.parse(entry.date || '');
+    return {
+      handle,
+      score,
+      date: Number.isFinite(parsedDate) ? new Date(parsedDate).toISOString() : new Date().toISOString()
+    };
+  }
+
+  function topArcadeScores(entries) {
+    const bestByHandle = new Map();
+    entries.forEach(entry => {
+      const normalized = normalizeArcadeEntry(entry);
+      if (!normalized) return;
+      const key = normalized.handle.toLowerCase();
+      const current = bestByHandle.get(key);
+      const isBetter = !current
+        || normalized.score > current.score
+        || (normalized.score === current.score && normalized.date > current.date);
+      if (isBetter) bestByHandle.set(key, normalized);
+    });
+    return [...bestByHandle.values()]
+      .sort((a, b) => b.score - a.score || b.date.localeCompare(a.date) || a.handle.localeCompare(b.handle))
+      .slice(0, LEADERBOARD_LIMIT);
+  }
+
+  function readLocalArcade() {
     try {
       const local = JSON.parse(localStorage.getItem(LB_KEY) || localStorage.getItem(LEGACY_LB_KEY) || '[]');
-      if (local.length) arcadeScores = local;
-    } catch {}
-    // Try remote
-    try {
-      const res = await fetch(BLOB_URL);
-      const data = await res.json();
-      const remote = (data.scores || []);
-      // Merge: combine local + remote, dedupe by handle+score+date, sort
-      const all = [...arcadeScores, ...remote];
-      const seen = new Set();
-      arcadeScores = all.filter(e => {
-        const key = e.handle + '|' + e.score + '|' + (e.date || '');
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      }).sort((a, b) => b.score - a.score);
-      if (arcadeScores.length > 50) arcadeScores.length = 50;
-    } catch {}
+      return Array.isArray(local) ? local : [];
+    } catch (error) {
+      console.warn('Could not read local leaderboard cache', error);
+      return [];
+    }
+  }
+
+  function leaderboardReadUrl() {
+    if (!LEADERBOARD_API_URL) return '';
+    const separator = LEADERBOARD_API_URL.includes('?') ? '&' : '?';
+    return LEADERBOARD_API_URL + separator + 'cb=' + Date.now();
+  }
+
+  function scoresFromLeaderboardPayload(data) {
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.scores)) return data.scores;
+    if (data && data.content && Array.isArray(data.content.scores)) return data.content.scores;
+    if (data && data.data && Array.isArray(data.data.scores)) return data.data.scores;
+    return [];
+  }
+
+  async function fetchRemoteArcadeScores() {
+    const res = await fetch(leaderboardReadUrl(), {headers: {'Accept': 'application/json'}, cache: 'no-store'});
+    if (!res.ok) throw new Error('Leaderboard fetch failed with status ' + res.status);
+    return topArcadeScores(scoresFromLeaderboardPayload(await res.json()));
+  }
+
+  async function writeRemoteArcadeScores(scores) {
+    const nextScores = topArcadeScores(scores);
+    const res = await fetch(LEADERBOARD_API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify({scores: nextScores})
+    });
+    if (!res.ok) throw new Error('Leaderboard submit failed with status ' + res.status);
+    const updatedScores = topArcadeScores(scoresFromLeaderboardPayload(await res.json()));
+    return updatedScores.length ? updatedScores : nextScores;
+  }
+
+  async function fetchArcade() {
+    arcadeScores = topArcadeScores(readLocalArcade());
     saveArcadeLocal();
     renderArcade();
+
+    if (!LEADERBOARD_API_URL) {
+      setArcadeSync('local', 'Local top 10 until global sync is connected.');
+      return;
+    }
+
+    setArcadeSync('syncing', 'Syncing global top 10...');
+    try {
+      arcadeScores = await fetchRemoteArcadeScores();
+      saveArcadeLocal();
+      renderArcade();
+      setArcadeSync('global', 'Live global top 10');
+    } catch (error) {
+      console.warn('Global leaderboard unavailable', error);
+      setArcadeSync('offline', 'Global leaderboard unavailable — showing this browser.');
+    }
   }
 
   function saveArcadeLocal() {
-    try { localStorage.setItem(LB_KEY, JSON.stringify(arcadeScores)); } catch {}
+    try {
+      localStorage.setItem(LB_KEY, JSON.stringify(topArcadeScores(arcadeScores)));
+    } catch (error) {
+      console.warn('Could not save local leaderboard cache', error);
+    }
   }
 
   async function addArcadeScore(handle, sc) {
-    arcadeScores.push({handle, score: sc, date: new Date().toISOString()});
-    arcadeScores.sort((a, b) => b.score - a.score);
-    if (arcadeScores.length > 50) arcadeScores.length = 50;
+    const entry = normalizeArcadeEntry({handle, score: sc, date: new Date().toISOString()});
+    if (!entry) return;
+    arcadeScores = topArcadeScores([...arcadeScores, entry, ...readLocalArcade()]);
     saveArcadeLocal();
     renderArcade();
-    // Try remote save (may fail due to CORS but that's ok)
+
+    if (!LEADERBOARD_API_URL) {
+      setArcadeSync('local', 'Saved to this browser. Global sync is not connected yet.');
+      return;
+    }
+
+    setArcadeSync('syncing', 'Submitting score to global top 10...');
     try {
-      await fetch(BLOB_URL, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({scores: arcadeScores})
-      });
-    } catch {}
+      const remoteScores = await fetchRemoteArcadeScores();
+      arcadeScores = topArcadeScores([...remoteScores, ...arcadeScores, entry]);
+      arcadeScores = await writeRemoteArcadeScores(arcadeScores);
+      saveArcadeLocal();
+      renderArcade();
+      setArcadeSync('global', 'Score synced to the global top 10');
+    } catch (error) {
+      console.warn('Global leaderboard submit failed', error);
+      setArcadeSync('offline', 'Score saved locally. Global sync is unavailable.');
+    }
   }
 
   function renderArcade() {
@@ -2384,7 +2497,7 @@
         container.innerHTML = '<div style="color:#6e7681;font-size:13px;text-align:center;padding:12px">No scores yet — be the first!</div>';
         return;
       }
-      arcadeScores.slice(0, 10).forEach((entry, i) => {
+      arcadeScores.slice(0, LEADERBOARD_LIMIT).forEach((entry, i) => {
         const row = document.createElement('div');
         row.className = 'arcade-row';
         const medals = ['🥇','🥈','🥉'];
@@ -2410,7 +2523,7 @@
 
   document.getElementById('startBtn').addEventListener('click', () => {
     // Require handle
-    const handle = playerInput.value.trim().replace(/^@/, '');
+    const handle = sanitizeHandle(playerInput.value);
     if (!handle) {
       playerInput.style.borderColor = 'rgba(248,81,73,.8)';
       playerInput.placeholder = 'enter your handle first!';
@@ -2419,6 +2532,7 @@
       return;
     }
     currentPlayer = handle;
+    playerInput.value = handle;
     localStorage.setItem(PLAYER_KEY, handle);
     if (state === 'title' && imagesLoaded) { ensureAudio(); startGame(false); clack(); }
   });

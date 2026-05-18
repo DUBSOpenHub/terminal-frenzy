@@ -36,12 +36,12 @@ This is a **client-side only** HTML game with no server component and no authent
 ### What it does
 - Uses embedded GitHub mascot artwork
 - Stores local gameplay data in the browser's `localStorage`
-- Optionally syncs leaderboard scores to JSONBlob
+- Syncs top-10 leaderboard scores to a public CORS-enabled npoint JSON endpoint
 - Synthesizes audio using the Web Audio API
 - Runs entirely in your browser tab
 
 ### What it does NOT do
-- ❌ No server, no backend, no game API calls (other than optional leaderboard requests)
+- ❌ No bundled server or backend
 - ❌ No cookies, no tracking, no analytics
 - ❌ No user accounts or authentication
 - ❌ No analytics or behavioral tracking
@@ -53,7 +53,7 @@ This is a **client-side only** HTML game with no server component and no authent
 - All game logic is inline in a single HTML file
 - No external scripts are loaded
 - Mascot artwork is embedded as data URLs in `index.html`, so character art does not require remote image requests
-- Player handles and scores may be stored locally and submitted to the leaderboard endpoint
+- Player handles and scores may be stored locally and submitted to the configured public leaderboard endpoint
 
 ### localStorage Usage
 
@@ -64,7 +64,12 @@ The game stores local gameplay data in `localStorage`:
 
 Legacy `terminal-frenzy-*` keys are read when present so existing local scores and player handles can migrate naturally after the rename.
 
-Local data is cleared when browser data is cleared. Leaderboard submissions are sent to the configured JSONBlob endpoint.
+Local data is cleared when browser data is cleared.
+Local leaderboard data is capped to each player's best score and the top 10 overall. The same handle, score, and date fields are submitted to the shared npoint leaderboard document.
+
+### Global Leaderboard Data
+
+The leaderboard endpoint is intentionally public so the GitHub Pages game can read and write scores without accounts. Do not submit sensitive information as a player handle. The game sanitizes handles to letters, numbers, and hyphens before writing scores.
 
 ---
 
