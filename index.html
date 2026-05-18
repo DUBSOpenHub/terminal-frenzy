@@ -338,7 +338,7 @@
       #homeMascotLines [id^="typedText"]{font-size:clamp(.55rem,2.8vw,.76rem)!important}
       #homeMascotLines img{width:32px!important;height:32px!important}
       .home-handle-row{margin-top:10px!important;gap:8px!important}
-      .home-handle-note{display:none!important}
+      .home-handle-note{display:block!important;font-size:10px!important;margin-top:5px!important}
       #playerAvatar{width:34px!important;height:34px!important}
       #playerHandle{width:min(190px,54vw)!important;padding:9px 12px!important}
       #startLine{margin-top:12px!important}
@@ -450,16 +450,6 @@
             <div class="hero-copy-kicker">12 terminals, 60 seconds</div>
             <div class="hero-copy-line" style="color:#e6edf3;font-size:clamp(13px,1.8vw,16px);font-weight:700">Use the Copilot CLI to clear <br class="mobile-only">requests fast and win!</div>
           </div>
-          <div class="instruction-grid">
-            <div class="instruction-step">
-              <div class="instruction-num">1</div>
-              <div class="instruction-text"><b>Press keys.</b> Clear their urgent requests.</div>
-            </div>
-            <div class="instruction-step">
-              <div class="instruction-num">2</div>
-              <div class="instruction-text"><b>Type urgent commands.</b> Ship before time runs out.</div>
-            </div>
-          </div>
         </div>
 
         <!-- GitHub handle input -->
@@ -468,11 +458,11 @@
           <span style="color:#6e7681;font-size:18px;font-weight:700">@</span>
           <input id="playerHandle" type="text" placeholder="your GitHub handle" maxlength="30" autocomplete="off" spellcheck="false" style="font-family:'Mona Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:16px;padding:10px 16px;background:rgba(13,17,23,.8);border:1px solid rgba(137,87,229,.3);border-radius:10px;color:#e6edf3;outline:none;width:200px;letter-spacing:.5px">
         </div>
-        <div class="home-handle-note" style="font-size:11px;color:#6e7681;margin-top:6px">Enter your handle to join the arcade leaderboard</div>
+        <div class="home-handle-note" style="font-size:11px;color:#6e7681;margin-top:6px">GitHub handle required to start and join the arcade leaderboard</div>
 
         <!-- Start button -->
         <div class="startline show" id="startLine" style="margin-top:16px">
-          <button id="startBtn" class="start-btn">▶ Start Game</button>
+          <button id="startBtn" class="start-btn">▶ Start Frenzy</button>
         </div>
 
         <!-- Arcade Leaderboard -->
@@ -503,7 +493,7 @@
           <b style="color:#58a6ff">Urgent Requests</b> pop up — type the Copilot CLI command to clear them<br>
         </div>
         <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-          <button class="start-btn" onclick="if(imagesLoaded && currentPlayer){ensureAudio();startGame(false);clack();}">▶ Start Game</button>
+          <button class="start-btn" onclick="if(imagesLoaded && currentPlayer){ensureAudio();startGame(false);clack();}">▶ Start Frenzy</button>
         </div>
         <div style="margin-top:14px;color:#6e7681;font-size:12px">Press <b style="color:#8b949e">ESC</b> to go back</div>
       </div>
