@@ -162,11 +162,6 @@
     #timer{font-size:clamp(28px,6vw,44px);font-weight:900;min-width:72px;text-align:center;color:#ffffff;text-shadow:0 0 10px rgba(255,255,255,0.3),0 0 22px rgba(163,113,247,0.2)}
     #timer.urgent{animation:panic 0.5s infinite;color:#ffffff;text-shadow:0 0 14px rgba(255,255,255,0.48),0 0 28px rgba(163,113,247,0.28)}
     @keyframes panic{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-    .play-side-timer{position:fixed;top:52%;z-index:80;pointer-events:none;font-family:'Mona Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:clamp(2.4rem,6.2vw,7rem);font-weight:900;line-height:.85;opacity:.68;color:#ffffff;text-shadow:0 0 18px rgba(255,255,255,.34),0 0 36px rgba(163,113,247,.24)}
-    .play-side-timer.urgent{opacity:.82;animation:panic 0.5s infinite;text-shadow:0 0 20px rgba(255,255,255,.46),0 0 42px rgba(163,113,247,.32)}
-    .play-side-left{left:clamp(12px,3vw,46px)}
-    .play-side-right{right:clamp(12px,3vw,46px)}
-
     #pipelineWrap{width:min(980px,96vw);margin-top:4px;border:1px solid var(--border);border-radius:8px;background:rgba(22,27,34,0.72);overflow:hidden}
     #pipelineTop{display:flex;justify-content:space-between;align-items:center;padding:4px 12px;border-bottom:1px solid rgba(48,54,61,0.6)}
     #pipelineTop .label{letter-spacing:3px;;font-size:12px;color:var(--muted)}
@@ -378,7 +373,6 @@
       .bossCmd .line{font-size:clamp(16px,5.4vw,26px);line-height:1.45;word-break:break-word}
       .bossHint{font-size:11px;letter-spacing:1px}
       #countdownText{white-space:normal!important;padding:0 20px}
-      .play-side-timer{display:none}
       .start-btn{padding:14px 34px;font-size:clamp(15px,4.8vw,20px)}
     }
     @media (orientation:landscape) and (max-height:520px){
@@ -506,9 +500,6 @@
 
     <!-- PLAY -->
     <div id="play" class="screen">
-      <div id="playTimerLeft" class="play-side-timer play-side-left" aria-hidden="true">60</div>
-      <div id="playTimerRight" class="play-side-timer play-side-right" aria-hidden="true">60</div>
-
       <!-- Terminal title bar -->
       <div style="width:min(980px,96vw);height:32px;display:flex;align-items:center;gap:8px;padding:0 14px;background:rgba(22,27,34,0.95);border:1px solid rgba(48,54,61,.4);border-bottom:none;border-radius:12px 12px 0 0;margin-top:4px">
         <div style="width:10px;height:10px;border-radius:50%;background:#f85149"></div>
@@ -698,8 +689,6 @@
   const scoreEl = document.getElementById('score');
   const highScoreEl = document.getElementById('highScore');
   const timerEl = document.getElementById('timer');
-  const playTimerLeftEl = document.getElementById('playTimerLeft');
-  const playTimerRightEl = document.getElementById('playTimerRight');
   const rankNowEl = document.getElementById('rankNow');
 
   const multEl = document.getElementById('mult');
@@ -1120,11 +1109,7 @@
   function updateHUD(){
     scoreEl.textContent = String(score);
     timerEl.textContent = String(timeLeft);
-    playTimerLeftEl.textContent = String(timeLeft);
-    playTimerRightEl.textContent = String(timeLeft);
     timerEl.className = timeLeft <= 10 ? 'urgent' : '';
-    playTimerLeftEl.className = 'play-side-timer play-side-left' + (timeLeft <= 10 ? ' urgent' : '');
-    playTimerRightEl.className = 'play-side-timer play-side-right' + (timeLeft <= 10 ? ' urgent' : '');
     rankNowEl.textContent = rankFor(score);
 
     multEl.textContent = 'x' + mult;
